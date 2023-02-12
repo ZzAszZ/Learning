@@ -1,0 +1,126 @@
+1.Что такое Stream API? Для чего нужны стримы?
+    import java.util.stream.* ;
+    Это новый инструмент языка Java, который позволяет использовать функциональный стиль при работе с разными структурами данных.
+
+    Благодаря стримам больше не нужно писать стереотипный код каждый раз, когда приходится что-то делать с данными:
+    сортировать, фильтровать, преобразовывать. Разработчики меньше думают о стандартной реализации и больше времени уделяют более сложным вещам.
+
+    Еще несколько преимуществ стримов:
+
+    Поддержка слабой связанности. Чем меньше классы знают друг про друга, тем лучше.
+
+    Распараллеливать проведений операций с коллекциями стало проще. Там, где раньше пришлось бы проходить циклом,
+    стримы значительно сокращают количество кода.
+
+    Методы Stream API не изменяют исходные коллекции, уменьшая количество побочных эффектов.
+
+2.Почему Stream называют ленивым?
+        пока не вызван терменальный метод стрим ничего не делает.
+
+
+
+3.Какие существуют способы создания стрима?
+
+        1. Создание пустого потока с помощью метода Stream.empty()
+
+                Stream<String> str = Stream.empty();
+
+        2. Создание потока с использованием метода Stream.builder() с экземпляром Stream.Builder
+                Stream.Builder<Integer> numBuilder = Stream.builder();
+                numBuilder.add(1).add(2).add( 3);
+                Stream<Integer> numStream = numBuilder.build();
+
+
+        3. Создание потока с указанными значениями с помощью метода Stream.of()
+                Stream<Integer> numStream = Stream.of(1, 2, 3);
+
+        4. Создание потока из существующего массива с использованием метода Arrays.stream()
+                Integer[] arr = {1, 2, 3, 4, 5};
+                Stream<Integer> numStream = Arrays.stream(arr);
+
+        5. Объединение двух существующих потоков с помощью метода Stream.concat()
+                Stream<Integer> numStream1 = Stream.of(1, 2, 3, 4, 5);
+                Stream<Integer> numStream2 = Stream.of(1, 2, 3);
+                Stream<Integer> combinedStream = Stream.concat( numStream1, numStream2);
+
+4.Как из коллекции создать стрим?
+    Коллекция	collection.stream()	        Collection<String> collection = Arrays.asList("f5", "b6", "z7");
+                                            Stream<String> collectionS = collection.stream();
+
+5.Какие промежуточные методы в стримах вы знаете?
+
+    Метод	                                Что сделает	                               Использование
+    filter	            отработает как фильтр, вернет значения,
+                        которые подходят под заданное условие	        collection.stream().filter(«e22»::equals).count()
+
+    sorted	            отсортирует элементы в естественном порядке;    collection.stream().sorted().collect(Collectors.toList())
+                        можно использовать Comparator
+
+    limit	            лимитирует вывод по тому, количеству,           collection.stream().limit(10).collect(Collectors.toList())
+                        которое вы укажете
+
+    skip	            пропустит указанное вами количество             collection.stream().skip(3).findFirst().orElse("4")
+                        элементов
+
+
+    distinct	        найдет и уберет элементы, которые повторяются;      collection.stream().distinct().collect(Collectors.toList())
+                        вернет элементы без повторов
+
+    peek	            выполнить действие над каждым элементом элементов, collection.stream().map(String::toLowerCase).peek((e) -> System.out.print("," + e)). collect(Collectors.toList())
+                        вернет стрим с исходными элементами
+
+    map	                выполнит действия над каждым элементом;
+                        вернет элементы с результатами функций	            Stream.of("3", "4", "5").map(Integer::parseInt).map(x -> x + 10).forEach(System.out::println);
+
+    mapToInt, mapToDouble,
+    mapToLong	            Сработает как map, только вернет числовой stream	collection.stream().mapToInt((s) -> Integer.parseInt(s)).toArray()
+
+
+
+    flatMap, flatMapToInt, flatMapToDouble, flatMapToLong	сработает как map, но преобразует один элемент в ноль, один или множество других	collection.stream().flatMap((p) -> Arrays.asList(p.split(",")).stream()).toArray(String[]::
+
+
+
+15.Какие терминальные методы в стримах вы знаете?
+            findFirst	вернет элемент, соответствующий условию, который стоит первым	collection.stream().findFirst().orElse("10")
+
+            findAny	вернет любой элемент, соответствующий условию	collection.stream().findAny().orElse("10")
+
+            collect	соберет результаты обработки в коллекции и не только	collection.stream().filter((s) -> s.contains("10")).collect(Collectors.toList())
+
+            count	посчитает и выведет, сколько элементов, соответствующих условию	collection.stream().filter("f5"::equals).count()
+
+            anyMatch	True, когда хоть один элемент соответствует условиям	collection.stream().anyMatch("f5"::equals)
+
+            noneMatch	True, когда ни один элемент не соответствует условиям	collection.stream().noneMatch("b6"::equals)
+
+            allMatch	True, когда все элементы соответствуют условиям	collection.stream().allMatch((s) -> s.contains("8"))
+
+            min	найдет самый маленький элемент, используя переданный сравнитель	collection.stream().min(String::compareTo).get()
+
+            max	найдет самый большой элемент, используя переданный сравнитель	collection.stream().max(String::compareTo).get()
+
+            forEach	применит функцию ко всем элементам, но порядок выполнения гарантировать не может	set.stream().forEach((p) -> p.append("_2"));
+
+            forEachOrdered	применит функцию ко всем элементам по очереди, порядок выполнения гарантировать может	list.stream().forEachOrdered((p) -> p.append("_nv"));
+
+            toArray	приведет значения стрима к массиву	collection.stream().map(String::toLowerCase).toArray(String[]::new);
+
+            reduce	преобразует все элементы в один объект	collection.stream().reduce((c1, c2) -> c1 + c2).orElse(0)
+
+
+18.Расскажите про класс Collectors и его методы.
+    Реализации Collectorэтого реализуют различные полезные операции сокращения, такие как накопление элементов в
+    коллекции, суммирование элементов в соответствии с различными критериями и т.д.
+    Ниже приведены примеры использования предопределенных сборщиков для выполнения общих задач сокращения изменяемых
+
+19.Расскажите о параллельной обработке в Java 8.
+    По умолчанию любая потоковая операция в Java обрабатывается последовательно, если явно не указано, что она параллельна.
+
+    Мы можем добиться этого, добавив параллельный метод в последовательный поток или создав поток с использованием метода parallelStream коллекции:
+
+    Параллельные потоки позволяют нам выполнять код параллельно на отдельных ядрах. Конечным результатом является комбинация каждого отдельного результата.
+
+    Однако порядок выполнения находится вне нашего контроля. Это может меняться каждый раз, когда мы запускаем программу:
+
+20.Что такое IntStream и DoubleStream?
